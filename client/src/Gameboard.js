@@ -3,48 +3,61 @@ import './App.css';
 
 const GameBoard=()=>{
     //this creates a 3 by 3 array/game board
-    const [piece, setPiece]= useState([]);
-    let arr=Array.from({length:3},(v,i)=>Array(3).fill(i))
-    console.log(arr)
+    
+    // const 
+    let arr=Array.from({length:2},(v,i)=>Array(9).fill(undefined))
+    let [piece, setPiece]= useState(arr);
 
     useEffect(()=>{
+
         console.log('effect acticated')
+        
+      
+    },piece)
 
-        for(let i=0;i<arr.length;i++){
+
+    const onKeyPress=(e)=>{
+        
+        let id=e.target.id;
+        let key=e.key;
+        let row=id[0];
+        let column=id[2];
+
+        console.log(id,key)
+        let regex='^([1-9])$';
+        if(key.match(regex)){
+            console.log('value is 1 to 9', key)
+            arr[row][column]=Number(key)
+            setPiece(arr)
+            // changed=true;
+        }else{
+            //this will stop the cell from rendiner
+            e.preventDefault()
             
-            for(let j=0;j<arr[i].length;j++){
-                
-                setPiece(piece=>[...piece,arr[i][j]])
-            }
         }
-    },[])
-
-
-
-    const handleChange=(e)=>{
-        console.log(e.target.value)
-        let [value]=[e.target]
-        console.log(value)
-        // setPiece(=>[...piece,e.target.value])
+        
+        console.log(piece)
     }
+
 
     return(
         <div className="main">
                 {arr.map((columns,index)=>{
                     return(
-                        <div>
+                        <div key={index}>
                              <form className='columns'>
                                 {arr[index].map((values,rows)=>{
                                 return(<div className='rows' key={[index,rows]}>
                                         
-                                                <input value={[index,rows]}
+                                                <input
+                                                        id={[index,rows]}
+                                                        value={piece[index][rows]}    
                                                         type='text'
-                                                        onChange={handleChange}
+                                                        maxLength='1'
+                                                        onKeyPress={onKeyPress} 
                                                     >
                                                 
-                                                </input> 
-                                            
-                                            
+                                                </input>     
                                         </div>)
                                 })}
                             </form>
@@ -59,9 +72,3 @@ const GameBoard=()=>{
 
 
   export default GameBoard;
-
-//   {columns.map(rows)=>{
-//     return(<div className='row'>
-//         number, {rows}
-//     </div>)
-// }}
