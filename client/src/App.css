@@ -25,6 +25,12 @@
   height:100%;
 }
 
+input{
+  font-size: 2em;
+  text-align: center;
+  
+}
+
 
 .main{
   /* height:153px; */
