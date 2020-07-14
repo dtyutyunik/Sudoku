@@ -10,7 +10,7 @@ function App() {
       <GameBoard/>
       
       <div>
-        {/* app */}
+       
       </div>
     </div>
   );

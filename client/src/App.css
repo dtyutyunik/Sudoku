@@ -1,41 +1,66 @@
-.columns{
-  /* height: 300px; */
-  /* width: 600px; */
-  /* border: 1px solid black; */
+.main{
+  
   display: flex;
   flex-direction: row;
   
-  width:90%;
-  /* height: 300px; */
-  margin: auto 0;
-  /* border: 1px solid black; */
+  width:80%;
+  margin-left: 5%;
+  /* width:50%; */
 }
 
-.rows{
-  height: 50px;
-  width: 100px;
-  border: 1px solid red;
-  
+.container{
+  /* border: 3px solid yellow; */
+  /* display: flex; */
+  /* margin-left:5%; */
+  /* width:80% */
+  /* width: 500px; */
+
 
 }
 
-.rows>input{
-  border: 2px solid purple;
-  width: 100%;
-  height:100%;
+.columns2,.columns5{
+  border-right: 3px outset green;
 }
+
+.columns0, .columns1, .columns3, .columns4, .columns6, .columns7, .columns8{
+  /* width:100px; */
+  /* border-bottom: 3px solid blue; */
+
+}
+.rows0, .rows1, .rows3, .rows4, .rows6, .rows7, .rows8{
+  /* width:100px;  */
+  /* border-bottom: 3px solid blue; */
+
+}
+
+.rows2,.rows5{
+  border-bottom: 3px outset green;
+ 
+}
+
+
+.rows0>input, .rows1>input,.rows2>input, .rows3>input, .rows4>input,.rows5>input, .rows6>input, .rows7>input, .rows8>input{
+  width: 85%;
+  height:94%;
+  border-radius: none;
+  box-shadow: inset 1em 1em white;
+  color: blue;
+}
+
+.rows0>input:hover, .rows1>input:hover,.rows2>input:hover, .rows3>input:hover, .rows4>input:hover,.rows5>input:hover, .rows6>input:hover, .rows7>input:hover, .rows8>input:hover{
+  box-shadow: inset 5em 1em silver;
+}
+
 
 input{
-  font-size: 2em;
+  font-size: 1.2em;
   text-align: center;
   
 }
 
 
-.main{
-  /* height:153px; */
-  /* width:153px; */
-  /* border: none; */
-  /* border: 1px solid green; */
+.App{
+  margin-top:5%;
+  
 }
 
