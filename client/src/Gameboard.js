@@ -4,30 +4,30 @@ import './App.css';
 const GameBoard=()=>{
     //this creates a 3 by 3 array/game board
     
-    let arr=Array.from({length:9},(v,i)=>Array(9).fill(undefined))
+    let arr=Array.from({length:9},(v,i)=>Array(9).fill(''))
     //veryeasy
     let veryEasy= [
-        [undefined, undefined, 3, undefined, undefined, 8, 6, undefined, 7],
-        [1, 4, undefined, 7, 2, 6, undefined, undefined, 9],
-        [5, undefined, 7, 1, 3, 9, 4, 2, 8],
-        [undefined, 2, 5, undefined, 8, 1, 9, undefined, 4],
-        [4, 1, undefined, 9, undefined, 3, 2, undefined, 5],
-        [undefined, 7, 9, 2, undefined, 5, undefined, 3, 6],
-        [6, undefined, 2, undefined, 1, undefined, undefined, 9, 3],
-        [7, undefined, undefined, 5, undefined, 2, undefined, undefined, 1],
-        [undefined, 8, 1, 3, 6, 7, undefined, 4, undefined]
+        ['', '', 3, '', '', 8, 6, '', 7],
+        [1, 4, '', 7, 2, 6, '', '', 9],
+        [5, '', 7, 1, 3, 9, 4, 2, 8],
+        ['', 2, 5, '', 8, 1, 9, '', 4],
+        [4, 1, '', 9, '', 3, 2, '', 5],
+        ['', 7, 9, 2, '', 5, '', 3, 6],
+        [6, '', 2, '', 1, '', '', 9, 3],
+        [7, '', '', 5, '', 2, '', '', 1],
+        ['', 8, 1, 3, 6, 7, '', 4, '']
     ];
     //easy
     let easy = [
-        [undefined, 3, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
-        [undefined, 2, undefined, 9, undefined, 6, 3, undefined, undefined],
-        [undefined, 6, undefined, 4, undefined, 2, undefined, 9, undefined],
-        [1, undefined, undefined, undefined, 9, undefined, 4, undefined, undefined],
-        [undefined, undefined, 8, 1, undefined, 3, 5, undefined, undefined],
-        [undefined,undefined, 5, undefined, 7, undefined,undefined,undefined, 3],
-        [undefined, 5, undefined, 3, undefined, 1, undefined, 6, undefined],
-        [undefined, undefined, 4, 6, undefined, 7, undefined, 3, undefined],
-        [undefined,undefined,undefined,undefined,undefined,undefined,undefined, 8, undefined]
+        ['', 3, '', '', '', '', '', '', ''],
+        ['', 2, '', 9, '', 6, 3, '', ''],
+        ['', 6, '', 4, '', 2, '', 9, ''],
+        [1, '', '', '', 9, '', 4, '', ''],
+        ['', '', 8, 1, '', 3, 5, '', ''],
+        ['','', 5, '', 7, '','','', 3],
+        ['', 5, '', 3, '', 1, '', 6, ''],
+        ['', '', 4, 6, '', 7, '', 3, ''],
+        ['','','','','','','', 8, '']
     ];
 
     const quads=[[[0,0],[2,2]],
@@ -41,22 +41,25 @@ const GameBoard=()=>{
                [[6,6],[8,8]]
               ]
 
-    let [piece, setPiece]= useState(arr);
+    // let [piece, setPiece]= useState(arr);
+    // const [matrix, setMatrix] = useState(Array.from({length: n},()=> Array.from({length: n}, () => null)));
+    let [piece, setPiece]= useState(Array.from({length: 9},()=> Array.from({length: 9}, () => '')));
+    let [result,setResult]=useState(false)
     // let [quadsFull,setQaudsFull]=useState([]);
     
 
-    //this will be used as an eventListener for keydown or solve me function
+    //this
     useEffect(()=>{
         // document.addEventListener("keydown", onKeyPress)
-        console.log('effect acticated')
-        console.log(piece)
+        console.log('piece was changed in useEffect')
+        // console.log(veryEasy)
         // console.log(piece)
       
     },piece)
 
     //this will be used to select a puzzle of different amount of values filled out
     useEffect(()=>{
-        
+        console.log('easy was created')
         setPiece(easy)
     },[])
 
@@ -144,7 +147,7 @@ const GameBoard=()=>{
     const solved=(board)=>{
         for(let i=0;i<9;i++){
             for(let j=0;j<9;j++){
-                if(board[i][j]===undefined){
+                if(board[i][j]===''){
                     return false;
                 }
             }
@@ -156,48 +159,69 @@ const GameBoard=()=>{
         // console.log('findempty called on', board)
         for(let r=0;r<9;r++){
             for(let c=0;c<9;c++){
-                    if(board[r][c]===undefined){
+                    if(board[r][c]===''){
                         // console.log('r',r,'c',c,'board',board)
                         return [r,c]
                     }
             }
         }
-        console.log('we reached the end')
         return null;
     }
 
-    const solve=(board)=>{
+    function solve(board){
 
         let currentPosition=findEmpty(board);
-    
+        // let copy = [...board];   
                 //base case where the sudoku board has everything filled out correctly
                 if(currentPosition===null){
-                    
+                    console.log('soduku finished succesfully')
+                    // setResult(true);
                     return true;
                 }
                  
                 for(let val=1;val<=9;val++){
                         
                     if(validate(currentPosition[0],currentPosition[1],val)){
-                            
-                        board[currentPosition[0]][currentPosition[1]]=val;   
-                        /////double check
-                        setPiece(board);
-                        ////////////
+                        let copy = [...board];   
+                        
+                        // board[currentPosition[0]][currentPosition[1]]=val;   
+                        // let updatedPiece=board[currentPosition[0]][currentPosition[1]];
+                        
+                        // setPiece(prevState=>({
+                        //    ...prevState,
+                        // }))
+                        copy[currentPosition[0]][currentPosition[1]]=val;  
+                        //   setPiece(copy)
+                       
                         
                         //now that we updated the value, we are rerunning solve , but now it is incremented till next empty/undefined cell
                         if(solve(board)){
-                                console.log('passed',currentPosition[0],currentPosition[1],val)
+                            console.log(copy, 'solving')    
+                            setPiece(copy)
+                                
                                 return true;
                         }
 
-                        // board[currentPosition[0]][currentPosition[1]]= undefined;
+                        // board[currentPosition[0]][currentPosition[1]]= '';
+                        copy=[...board];
+                        // copy[currentPosition[0]][currentPosition[1]]= '';
+                        copy[currentPosition[0]][currentPosition[1]]='';   
+                        // updatedPiece= board[currentPosition[0]][currentPosition[1]];
+                        setPiece(copy)
+                        // setTimeout(()=>{
+                        //     // let copy=[...board];
+                        //     // copy[currentPosition[0]][currentPosition[1]]= '';
+                        // setPiece(prevState=>({
+                        //     ...prevState,
+                        //     // updatedPiece: ''
+                        // }))
+                        
                     }
                 }
-                console.log('FAILED',currentPosition[0],currentPosition[1],board)
-                // return false;
-                setPiece(board);
-                return board;
+               
+                console.log(board, 'failed')    
+                return false;
+                
 
     }
 
@@ -326,49 +350,38 @@ const GameBoard=()=>{
         }
     }
 
-
-
-
-    const onKeyPress=(e)=>{
+    const onKeyPress=(row,column,e)=>{
         
-        let id=e.target.id;
+        // let id=e.target.id;
         let key=e.key;
-        let row=id[2];
-        let column=id[0];
-
         
-
         //For Deleting, currently it does not rerender the boxes
-        // if(key==='Backspace' || key==='Delete'){
-        //     // arr[row][column]=undefined;
-        //     // setPiece(arr) 
-        //     console.log('backspace or delete pressed')
-        // }
+        if(key==='Backspace' || key==='Delete'){
+           
+            let copy = [...piece];
+            copy[row][column] = '';
+            setPiece(copy)     
+           
+        }
 
         let regex='^([1-9])$';
         if(key.match(regex)){
-            // console.log('value is 1 to 9', key)
             let val=Number(key)
-            
             let validated=validate(row,column,val)
 
             if(!validated){
                 e.preventDefault()
             }else{
-                piece[row][column]=val;  
-
-                //needs to be double checked
-                setPiece(piece)      
-                //////////////////
+                let copy = [...piece];
+                copy[row][column] = Number(val);
+                setPiece(copy)      
             }
 
         }else{
             //this will stop the cell from rerenderring
             e.preventDefault()
-            
         }
         
-        console.log(piece)
     }
 
     const checkRow=(row,val,left,right)=>{
@@ -472,32 +485,38 @@ const GameBoard=()=>{
         return true;
 
     }
-    const doNothing=()=>{
-        console.log('does nothing')
-    }
+
+const doNothing=()=>{
+    console.log('do nothing')
+}
 
 //  value={piece[rows][index]}    is correct way to express it
     return(
         
         <div className="main">
-                {piece.map((columns,index)=>{
+                {piece.map((index,columns)=>{
                     return(
-                        <div className='container' key={index}>
-                             <form className={`columns${index}`}>
-                                {piece[index].map((values,rows)=>{
-                                return(<div className={`rows${rows}`}key={[index,rows]}>
+                        <div className='container' key={columns}>
+                             <form 
+                            //  onSubmit={handleSubmit}
+                             className={`columns${columns}` 
+                             
+                             }>
+                                {piece[columns].map((values,rows)=>{
+                                return(<div className={`rows${rows}`}key={[columns,rows]}>
                                         
                                                 <input
-                                                        id={[index,rows]}
-                                                        value={piece[rows][index]}    
-                                                        type='text'
-                                                        maxLength='1'
-                                                        onKeyDown={onKeyPress}
-                                                        // onChange={doNothing}
+                                                        id={[columns,rows]}
                                                         
+                                                        value={piece[rows][columns]}    
+                                                        type='text'
+                                                        maxLength='1'                     
+                                                        onKeyDown={e => onKeyPress(rows, columns, e)}
+                                                        onChange={doNothing}
                                                     >
                                                 
                                                 </input>     
+                                            
                                         </div>)
                                 })}
                             </form>
