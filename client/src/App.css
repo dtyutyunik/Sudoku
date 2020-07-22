@@ -58,6 +58,16 @@ input{
   
 }
 
+input:disabled{
+  font-size: 1.2em;
+  text-align: center;
+  color:black;
+  box-shadow: inset 5em 1em rgb(230, 230, 230);
+  cursor: not-allowed;
+
+  
+}
+
 
 .App{
   margin-top:5%;

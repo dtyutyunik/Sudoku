@@ -1,35 +1,8 @@
 import React, {useState,useEffect} from 'react';
 import './App.css';
+import Puzzles from './Puzzles.js';
 
 const GameBoard=()=>{
-    //this creates a 3 by 3 array/game board
-    
-    let arr=Array.from({length:9},(v,i)=>Array(9).fill(''))
-    //veryeasy
-    let veryEasy= [
-        ['', '', 3, '', '', 8, 6, '', 7],
-        [1, 4, '', 7, 2, 6, '', '', 9],
-        [5, '', 7, 1, 3, 9, 4, 2, 8],
-        ['', 2, 5, '', 8, 1, 9, '', 4],
-        [4, 1, '', 9, '', 3, 2, '', 5],
-        ['', 7, 9, 2, '', 5, '', 3, 6],
-        [6, '', 2, '', 1, '', '', 9, 3],
-        [7, '', '', 5, '', 2, '', '', 1],
-        ['', 8, 1, 3, 6, 7, '', 4, '']
-    ];
-    //easy
-    let easy = [
-        ['', 3, '', '', '', '', '', '', ''],
-        ['', 2, '', 9, '', 6, 3, '', ''],
-        ['', 6, '', 4, '', 2, '', 9, ''],
-        [1, '', '', '', 9, '', 4, '', ''],
-        ['', '', 8, 1, '', 3, 5, '', ''],
-        ['','', 5, '', 7, '','','', 3],
-        ['', 5, '', 3, '', 1, '', 6, ''],
-        ['', '', 4, 6, '', 7, '', 3, ''],
-        ['','','','','','','', 8, '']
-    ];
-
     const quads=[[[0,0],[2,2]],
                [[0,3],[2,5]],
                [[0,6],[2,8]],
@@ -41,94 +14,101 @@ const GameBoard=()=>{
                [[6,6],[8,8]]
               ]
 
-    // let [piece, setPiece]= useState(arr);
-    // const [matrix, setMatrix] = useState(Array.from({length: n},()=> Array.from({length: n}, () => null)));
     let [piece, setPiece]= useState(Array.from({length: 9},()=> Array.from({length: 9}, () => '')));
-    let [result,setResult]=useState(false)
-    // let [quadsFull,setQaudsFull]=useState([]);
+    let [result,setResult]=useState(false);
+    let [answer,setAnswer]=useState();          //the answers will be stored here
+    let [original,setOriginal]=useState();      //will hold the original sudoku board for reseting purposes
+
+    //A random puzzle is chosen from Puzzles.js
+    function pickRandomPuzzle(puzzleChoice){
+        let puzzle=puzzleChoice.quizzes;
+        let answer=puzzleChoice.solutions;
+        
+        let puzzleArr=Array.from({length: 9},()=> Array.from({length: 9}, () => ''));
+        let ansArr=Array.from({length: 9},()=> Array.from({length: 9}, () => ''));
+        let col=0,row=0;
+        
+        for(let i=0;i<puzzle.length;i++){
+            let str=puzzle[i]
+            let strAns=answer[i]
+            
+            if(str==='0'){
+                str=''
+                puzzleArr[col][row]=str;
+            }else{
+                puzzleArr[col][row]=Number(str);
+            }
+            
+            ansArr[col][row]=Number(strAns);
+
+            row++
+            
+            if((i+1)%9===0 && i!==0){
+                col++;
+                row=0;
+            }
+            
+        }
+
+        setPiece(puzzleArr)
+        setAnswer(ansArr)
+        setOriginal(puzzleChoice)
+        
+    }
     
+    //newPuzzle needs to be updated
+    const newPuzzle=()=>{
+        setResult(false);
+        console.log('new puzzle clicked')
+    }
 
-    //this
-    useEffect(()=>{
-        // document.addEventListener("keydown", onKeyPress)
-        console.log('piece was changed in useEffect')
-        // console.log(veryEasy)
-        // console.log(piece)
-      
-    },piece)
 
-    //this will be used to select a puzzle of different amount of values filled out
     useEffect(()=>{
-        console.log('easy was created')
-        setPiece(easy)
+        let puzzleChoice=Puzzles[Math.floor(Math.random()*(Puzzles.length-0)+0)];
+        pickRandomPuzzle(puzzleChoice);
+        
+        console.log('random puzzle was ran')
     },[])
 
-    const testingAllCases=()=>{
-        
-        //picks random quad where we will add number to 
-        let randomQuad=Math.floor(Math.random()*(8-0)+0);
-        //picks random number between 1 and 9 that we will add to the quad
-        let randomNumber=Math.floor(Math.random()*(9-1)+1);
+    // const getUndefined=(quadriant)=>{
+    //     let res=[];
 
-        // let canWeAddNumber=checkQuadraint(randomQuad,randomNumber);
-        for(let number=1;number<=9;number++){
-            //test 1,4,9 cause those gave us issues
-            // let number=1;
-            // let canWeAddNumber=checkQuadraint(8,number);
-            // const checkRow=(row,val,left,right)=>{
-            let canWeAddNumber=checkColumn(8,number,0,8);
-            console.log(`value is ${number}, and the answer to adding number is ${canWeAddNumber}`)
+    //     let startingRow=quads[quadriant][0][0]
+    //     let endingRow=quads[quadriant][1][0]
+    //     let startingColumn=quads[quadriant][0][1]
+    //     let endingColumn=quads[quadriant][1][1]
+        
+        
+    //     const getUndefinedCellsInRow=(row,left,right)=>{
+    //         let obj=[];
+    //         let midpoint=left+Math.floor((right-left)/2)
             
-        }
-        
-        
-
-        // console.log('quad is', 2, 'randomNumber is ', randomNumber, 'canweaddNumber', canWeAddNumber);
-
-    }
-
-    const getUndefined=(quadriant)=>{
-        let res=[];
-
-        let startingRow=quads[quadriant][0][0]
-        let endingRow=quads[quadriant][1][0]
-        let startingColumn=quads[quadriant][0][1]
-        let endingColumn=quads[quadriant][1][1]
-        
-
-        //quadCheck
-           
-
-        const getUndefinedCellsInRow=(row,left,right)=>{
-            let obj=[];
-            let midpoint=left+Math.floor((right-left)/2)
+    //         //MidPoint Check
+    //         if(piece[row][midpoint]===undefined){
+    //             obj.push([row,midpoint]) 
+    //         }
             
-            //MidPoint Check
-            if(piece[row][midpoint]===undefined){
-                obj.push([row,midpoint]) 
-            }
-            
-            while(left<right){
-                if(piece[row][left]===undefined){
-                    obj.push([row,left]) 
-                }
-                left++
-                if(piece[row][right]===undefined){
-                    obj.push([row,right])      
-                }
-                right--;
-            }
-            return obj;
-        }
+    //         while(left<right){
+    //             if(piece[row][left]===undefined){
+    //                 obj.push([row,left]) 
+    //             }
+    //             left++
+    //             if(piece[row][right]===undefined){
+    //                 obj.push([row,right])      
+    //             }
+    //             right--;
+    //         }
+    //         return obj;
+    //     }
 
-        for(let i=startingRow;i<=endingRow;i++){
-            res.push(getUndefinedCellsInRow(i,startingColumn,endingColumn))
-        }
+    //     for(let i=startingRow;i<=endingRow;i++){
+    //         res.push(getUndefinedCellsInRow(i,startingColumn,endingColumn))
+    //     }
         
 
-        return res.flat(1);
+    //     return res.flat(1);
 
-    }
+    // }
 
     const validate=(row,column,val)=>{
             //checks
@@ -142,18 +122,6 @@ const GameBoard=()=>{
             }
             return false;
     }
-
-    //checks if every value in array has a number in it
-    const solved=(board)=>{
-        for(let i=0;i<9;i++){
-            for(let j=0;j<9;j++){
-                if(board[i][j]===''){
-                    return false;
-                }
-            }
-        }
-            return true;
-        }
 
     const findEmpty=(board)=>{
         // console.log('findempty called on', board)
@@ -171,171 +139,47 @@ const GameBoard=()=>{
     function solve(board){
 
         let currentPosition=findEmpty(board);
-        // let copy = [...board];   
                 //base case where the sudoku board has everything filled out correctly
                 if(currentPosition===null){
                     console.log('soduku finished succesfully')
-                    // setResult(true);
+                    setResult(true)
+                    // setTimeout(()=>
+                    //     {setResult(true)}
+                    //     ,3000);
                     return true;
                 }
-                 
+                //  console.log(currentPosition)
                 for(let val=1;val<=9;val++){
                         
                     if(validate(currentPosition[0],currentPosition[1],val)){
+                        
                         let copy = [...board];   
+                        copy[currentPosition[0]][currentPosition[1]]=val; 
+                        //delays it from updating by .1 sec 
+                        // setTimeout(()=>
+                        // {updateOneNumber(currentPosition[0],currentPosition[1],val)}
+                        // ,500); 
                         
-                        // board[currentPosition[0]][currentPosition[1]]=val;   
-                        // let updatedPiece=board[currentPosition[0]][currentPosition[1]];
-                        
-                        // setPiece(prevState=>({
-                        //    ...prevState,
-                        // }))
-                        copy[currentPosition[0]][currentPosition[1]]=val;  
-                        //   setPiece(copy)
-                       
-                        
-                        //now that we updated the value, we are rerunning solve , but now it is incremented till next empty/undefined cell
-                        if(solve(board)){
-                            console.log(copy, 'solving')    
-                            setPiece(copy)
-                                
+                        updateOneNumber(currentPosition[0],currentPosition[1],val)
+                        if(solve(copy)){
+                        //now that we updated the value, we are rerunning solve , but now it is incremented till next '' cell   
                                 return true;
                         }
 
-                        // board[currentPosition[0]][currentPosition[1]]= '';
-                        copy=[...board];
-                        // copy[currentPosition[0]][currentPosition[1]]= '';
-                        copy[currentPosition[0]][currentPosition[1]]='';   
-                        // updatedPiece= board[currentPosition[0]][currentPosition[1]];
-                        setPiece(copy)
-                        // setTimeout(()=>{
-                        //     // let copy=[...board];
-                        //     // copy[currentPosition[0]][currentPosition[1]]= '';
-                        // setPiece(prevState=>({
-                        //     ...prevState,
-                        //     // updatedPiece: ''
-                        // }))
-                        
+                        // board[currentPosition[0]][currentPosition[1]]='';   
+                        // updateOneNumber(currentPosition[0],currentPosition[1],'')
                     }
                 }
-               
-                console.log(board, 'failed')    
+                board[currentPosition[0]][currentPosition[1]]='';   
+                updateOneNumber(currentPosition[0],currentPosition[1],'')
+                //delays it from updating by .1 sec 
+                // setTimeout(()=>
+                // {updateOneNumber(currentPosition[0],currentPosition[1],'')}
+                // ,500);
+                
+                
                 return false;
                 
-
-    }
-
-
-
-    const addRandomNumber=()=>{
-        let randomQuad=Math.floor(Math.random()*(8-0)+0);
-        
-        //picks random number between 1 and 9 that we will add to the quad
-        // let randomNumber=Math.floor(Math.random()*(9-1)+1);
-
-        // let choices={};
-        let choices=[];
-        let quadCheckingNum=4
-        // let emptyquads=[];
-        for(let i=1;i<=9;i++){
-            if(checkQuadraint(quadCheckingNum,i)){
-                // choices[i]=[]
-                choices.push(i)
-            }
-
-            
-        }
-
-
-        console.log('all the possible numbers for this quadriant', quadCheckingNum, 'is ', choices)
-        let undefinedQuad=getUndefined(quadCheckingNum);
-        console.log('undefined cells are', undefinedQuad)
-        // console.log('row',undefinedQuad[3][0], 'column', undefinedQuad[3][1])
-        
-
-        let quadsWithPossibleChoices=new Map();
-        
-
-        for(let i=0;i<undefinedQuad.length;i++){
-
-            for(let j=0;j<choices.length;j++){
-                // console.log(choices[j])
-                let rowCheck=checkRow(undefinedQuad[i][0],choices[j],0,8)
-                let columnCheck=checkColumn(undefinedQuad[i][1],choices[j],0,8)
-                // console.log(`choices is ${choices[j]}, row check is ${rowCheck}. column check is ${columnCheck}`)
-                if(rowCheck && columnCheck){
-                    
-                    if(quadsWithPossibleChoices.has(undefinedQuad[i])){
-
-                        let get=quadsWithPossibleChoices.get(undefinedQuad[i])
-
-                        quadsWithPossibleChoices.set(undefinedQuad[i],[...get,choices[j]])
-                    }else{
-                        
-                        quadsWithPossibleChoices.set(undefinedQuad[i],[choices[j]])   
-                    } 
-                }
-            }
-
-        }
-        console.log('Possible numbers for the cells are', quadsWithPossibleChoices)
-        let finalMap=new Map();
-
-        function breakDownMap(map,array,resultMap,rerun){
-            console.log('rerun is', rerun)
-            // if(map.size===0 && rerun){
-                
-            //     console.log('master exit')
-            //     return resultMap;
-            // }
-            if(rerun){
-                
-                console.log('master exit')
-                return resultMap;
-            }
-            rerun=false;
-           
-           
-            
-            //This we will use to create an array of numbers removed where value ===1            
-                for(let key of map.keys()){
-                    let value=map.get(key)
-                    // if value.length===1 that means it is the correct answer
-                   if(value.length===1){
-                        resultMap.set(key,value)
-                        array.push(value[0])
-                        map.delete(key)
-                        rerun=true;
-                   }
-            }
-
-           
-            //now using the array we will relook into the remaining values and remove values where they are equal to array
-            for(let key of map.keys()){
-                let value=map.get(key)
-
-                for(let i=0;i<value.length;i++){
-                    for(let j=0;j<array.length;j++){
-                        if(value[i]===array[j]){
-                            value.splice(i,1)  
-                        }   
-                    }
-                    map.set(key,value)
-                }
-            }
-            // console.log('map now is after removal', map)
-            array.length=0
-            
-            // console.log('array is', array,'map is',map,'result map',resultMap) 
-            // array.length=0;
-
-            breakDownMap(map,[],resultMap,rerun);
-            
-        }
-
-        breakDownMap(quadsWithPossibleChoices,[],finalMap,true);
-        
-        console.log('final map',finalMap)
 
     }
 
@@ -348,40 +192,6 @@ const GameBoard=()=>{
                 return i   
             }
         }
-    }
-
-    const onKeyPress=(row,column,e)=>{
-        
-        // let id=e.target.id;
-        let key=e.key;
-        
-        //For Deleting, currently it does not rerender the boxes
-        if(key==='Backspace' || key==='Delete'){
-           
-            let copy = [...piece];
-            copy[row][column] = '';
-            setPiece(copy)     
-           
-        }
-
-        let regex='^([1-9])$';
-        if(key.match(regex)){
-            let val=Number(key)
-            let validated=validate(row,column,val)
-
-            if(!validated){
-                e.preventDefault()
-            }else{
-                let copy = [...piece];
-                copy[row][column] = Number(val);
-                setPiece(copy)      
-            }
-
-        }else{
-            //this will stop the cell from rerenderring
-            e.preventDefault()
-        }
-        
     }
 
     const checkRow=(row,val,left,right)=>{
@@ -486,33 +296,104 @@ const GameBoard=()=>{
 
     }
 
-const doNothing=()=>{
-    console.log('do nothing')
-}
+    const deleteVal=(row,column,e)=>{
+        let key=e.key;
+        if(key==='Backspace' || key==='Delete'){
+           
+            let copy = [...piece];
+            copy[row][column] = '';
+            setPiece(copy)     
+        }
+    }
 
-//  value={piece[rows][index]}    is correct way to express it
-    return(
+    //need to add localstorage to hint to speed up hint randomization
+    const hint=()=>{
         
+        let randomRow=Math.floor(Math.random()*(9-0)+0);
+        
+        let choices= [];
+        for(let i=0;i<piece[randomRow].length;i++){
+            
+            if(piece[randomRow][i]===''){
+                choices.push(i)
+            }
+        }
+        
+        if(choices.length>0){
+            let randomColumn=choices[Math.floor(Math.random()*(choices.length-0)+0)]
+            let updatedVal=answer[randomRow][randomColumn]; 
+            updateOneNumber(randomRow,randomColumn,updatedVal)
+            
+        }else{
+            console.log('hint was rerun')
+            hint();
+        }
+
+        //Exit 
+        if(findEmpty(piece)===null){
+            return setResult(true);
+
+        }
+
+        
+    }
+
+    const updateOneNumber=(row,col,val)=>{
+        let copy=[...piece]
+        copy[row][col]=val;
+        return setPiece(copy);        
+    }
+
+    const handleChange=(row,column,e)=>{
+        let key=e.target.value;
+        
+        let regex='^([1-9])$';
+        if(key.match(regex)){
+            let val=Number(key)
+            let validated=validate(row,column,val)
+
+            if(!validated){
+                e.preventDefault()
+            }else{
+                let copy = [...piece];
+                copy[row][column] = Number(val);
+                setPiece(copy)      
+            }
+
+        }else{
+            //this will stop the cell from rerenderring
+            e.preventDefault()
+        }
+        
+    }
+
+    const reset=()=>{
+        pickRandomPuzzle(original)
+        setResult(false)
+        
+    }
+
+
+
+    return(
+        <div>
         <div className="main">
                 {piece.map((index,columns)=>{
                     return(
                         <div className='container' key={columns}>
-                             <form 
-                            //  onSubmit={handleSubmit}
-                             className={`columns${columns}` 
-                             
-                             }>
+                             <form className={`columns${columns}` }>
                                 {piece[columns].map((values,rows)=>{
                                 return(<div className={`rows${rows}`}key={[columns,rows]}>
                                         
                                                 <input
                                                         id={[columns,rows]}
-                                                        
+                                                        //disables the pieces so the original ones can not be changed
+                                                        // disabled={piece[rows][columns]!=='' && piece[rows][columns]===easy[rows][columns]?true:false}
                                                         value={piece[rows][columns]}    
                                                         type='text'
                                                         maxLength='1'                     
-                                                        onKeyDown={e => onKeyPress(rows, columns, e)}
-                                                        onChange={doNothing}
+                                                        onKeyDown={e => deleteVal(rows, columns, e)}
+                                                        onChange={e => handleChange(rows, columns, e)}
                                                     >
                                                 
                                                 </input>     
@@ -524,15 +405,32 @@ const doNothing=()=>{
                     )
                 })}
             
-               <div>
-                     <button onClick={addRandomNumber}>Add A Random Number</button>
+                <div>
+                     <button 
+                     disabled={result?true:false}
+                     onClick={hint}>Hint</button>
+                </div>
+
+                <div>
+                     <button 
+                     disabled={result?true:false}
+                     onClick={()=>solve(piece)}>Solve it for me</button>
                 </div>
                 <div>
-                     <button onClick={()=>solve(piece,0)}>Solve it for me</button>
+                     <button onClick={reset}>Reset</button>
                 </div>
+                <div>
+                     <button onClick={newPuzzle}>Generate new Sudoku</button>
+                </div>
+              
+               
               
                 
             </div>
+             <div>
+                <h1>{result===true?'Solved':null}</h1>
+             </div>
+             </div>
 
       )
     
