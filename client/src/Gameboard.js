@@ -15,14 +15,27 @@ const GameBoard=()=>{
               ]
 
     let [piece, setPiece]= useState(Array.from({length: 9},()=> Array.from({length: 9}, () => '')));
-    let [result,setResult]=useState(false);
+    let [result,setResult]=useState(false);     //Once puzzle is solved, this will also disable hint and solve it for me buttons 
     let [answer,setAnswer]=useState();          //the answers will be stored here
-    let [original,setOriginal]=useState();      //will hold the original sudoku board for reseting purposes
+    // let [original,setOriginal]=useState([]);       //will hold the original sudoku board for reseting purposes
+    // const [original]=useState(()=>{
+    //     let original=JSON.parse(window.localStorage.getItem("original"));
+    //     return original
+    // });       //will hold the original sudoku board for reseting purposes
+    let original=JSON.parse(window.localStorage.getItem("original"));
 
     //A random puzzle is chosen from Puzzles.js
-    function pickRandomPuzzle(puzzleChoice){
-        let puzzle=puzzleChoice.quizzes;
-        let answer=puzzleChoice.solutions;
+    function pickRandomPuzzle(puzzleChoice,resetting){
+       let puzzle,answer; 
+        if(resetting){
+            puzzle=puzzleChoice;
+            answer=answer;
+        }else{
+            puzzle=puzzleChoice.quizzes;
+            answer=puzzleChoice.solutions;
+        }
+        
+        
         
         let puzzleArr=Array.from({length: 9},()=> Array.from({length: 9}, () => ''));
         let ansArr=Array.from({length: 9},()=> Array.from({length: 9}, () => ''));
@@ -38,9 +51,8 @@ const GameBoard=()=>{
             }else{
                 puzzleArr[col][row]=Number(str);
             }
-            
+    
             ansArr[col][row]=Number(strAns);
-
             row++
             
             if((i+1)%9===0 && i!==0){
@@ -50,68 +62,35 @@ const GameBoard=()=>{
             
         }
 
-        setPiece(puzzleArr)
-        setAnswer(ansArr)
-        setOriginal(puzzleChoice)
+        console.log('piece should be',puzzleArr)
+        setPiece(puzzleArr)     
+        setAnswer(ansArr)   
+        // console.log('current localstorage is',window.localStorage.getItem('original',JSON.stringify(puzzleArr)))
+        
+        //set the localstorage to original
+        window.localStorage.setItem('original',JSON.stringify(puzzleArr));
+        // console.log('new localstorage is',window.localStorage.getItem('original',JSON.stringify(puzzleArr)))
+        // setOriginal([puzzleChoice.quizzes])
         
     }
     
-    //newPuzzle needs to be updated
+    //Selects a new puzzle and resets Result to false;
     const newPuzzle=()=>{
-        setResult(false);
-        console.log('new puzzle clicked')
+        let puzzleChoice=Puzzles[Math.floor(Math.random()*(Puzzles.length-0)+0)];
+        pickRandomPuzzle(puzzleChoice,false);
+        
     }
 
-
+    //initalize first random choice of sudoku puzzle
     useEffect(()=>{
         let puzzleChoice=Puzzles[Math.floor(Math.random()*(Puzzles.length-0)+0)];
-        pickRandomPuzzle(puzzleChoice);
+        pickRandomPuzzle(puzzleChoice,false);
         
-        console.log('random puzzle was ran')
     },[])
 
-    // const getUndefined=(quadriant)=>{
-    //     let res=[];
-
-    //     let startingRow=quads[quadriant][0][0]
-    //     let endingRow=quads[quadriant][1][0]
-    //     let startingColumn=quads[quadriant][0][1]
-    //     let endingColumn=quads[quadriant][1][1]
-        
-        
-    //     const getUndefinedCellsInRow=(row,left,right)=>{
-    //         let obj=[];
-    //         let midpoint=left+Math.floor((right-left)/2)
-            
-    //         //MidPoint Check
-    //         if(piece[row][midpoint]===undefined){
-    //             obj.push([row,midpoint]) 
-    //         }
-            
-    //         while(left<right){
-    //             if(piece[row][left]===undefined){
-    //                 obj.push([row,left]) 
-    //             }
-    //             left++
-    //             if(piece[row][right]===undefined){
-    //                 obj.push([row,right])      
-    //             }
-    //             right--;
-    //         }
-    //         return obj;
-    //     }
-
-    //     for(let i=startingRow;i<=endingRow;i++){
-    //         res.push(getUndefinedCellsInRow(i,startingColumn,endingColumn))
-    //     }
-        
-
-    //     return res.flat(1);
-
-    // }
-
+    //check
     const validate=(row,column,val)=>{
-            //checks
+            
             let rowCheck=checkRow(row,val,0,8);
             let columnCheck=checkColumn(column,val,0,8)
             let quad=getQuad(row,column);
@@ -124,16 +103,17 @@ const GameBoard=()=>{
     }
 
     const findEmpty=(board)=>{
-        // console.log('findempty called on', board)
+        
         for(let r=0;r<9;r++){
             for(let c=0;c<9;c++){
                     if(board[r][c]===''){
-                        // console.log('r',r,'c',c,'board',board)
+        
                         return [r,c]
                     }
             }
         }
-        return null;
+        
+        return null;    //if it returns null that means that puzzle is not empty
     }
 
     function solve(board){
@@ -183,6 +163,7 @@ const GameBoard=()=>{
 
     }
 
+    //returns the quad location based on row and column
     const getQuad=(row,column)=>{
        
         for(let i=0;i<quads.length;i++){
@@ -194,6 +175,7 @@ const GameBoard=()=>{
         }
     }
 
+    //0(log n) to find row
     const checkRow=(row,val,left,right)=>{
         let obj=new Set();
         let midpoint=left+Math.floor((right-left)/2)
@@ -235,6 +217,7 @@ const GameBoard=()=>{
 
     }
 
+    //used to check for all values in quad
     const checkQuadraint=(quadriant,val)=>{
     
         let startRow=quads[quadriant][0][0]
@@ -252,7 +235,8 @@ const GameBoard=()=>{
         return true;
 
     }
-
+    
+    //0(log n) to find column
     const checkColumn=(column,val,left,right)=>{
         let obj=new Set();
        
@@ -296,6 +280,7 @@ const GameBoard=()=>{
 
     }
 
+    //deletes a value from sudoku board that wasn't prefilled originally
     const deleteVal=(row,column,e)=>{
         let key=e.key;
         if(key==='Backspace' || key==='Delete'){
@@ -338,6 +323,7 @@ const GameBoard=()=>{
         
     }
 
+    //updates oneNumber at a time
     const updateOneNumber=(row,col,val)=>{
         let copy=[...piece]
         copy[row][col]=val;
@@ -367,8 +353,10 @@ const GameBoard=()=>{
         
     }
 
+    //resets puzzle back to original/current puzzle
     const reset=()=>{
-        pickRandomPuzzle(original)
+        console.log(original, original.length)
+        pickRandomPuzzle(original,true)
         setResult(false)
         
     }
@@ -376,7 +364,9 @@ const GameBoard=()=>{
 
 
     return(
+        
         <div>
+            {/* {console.log('originalarray is', original)} */}
         <div className="main">
                 {piece.map((index,columns)=>{
                     return(
@@ -384,12 +374,13 @@ const GameBoard=()=>{
                              <form className={`columns${columns}` }>
                                 {piece[columns].map((values,rows)=>{
                                 return(<div className={`rows${rows}`}key={[columns,rows]}>
-                                        
+                                   
                                                 <input
                                                         id={[columns,rows]}
                                                         //disables the pieces so the original ones can not be changed
-                                                        // disabled={piece[rows][columns]!=='' && piece[rows][columns]===easy[rows][columns]?true:false}
+                                                        disabled={original[rows][columns]!==''?true:false}
                                                         value={piece[rows][columns]}    
+                                                        
                                                         type='text'
                                                         maxLength='1'                     
                                                         onKeyDown={e => deleteVal(rows, columns, e)}
