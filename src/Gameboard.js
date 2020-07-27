@@ -18,7 +18,7 @@ const GameBoard=()=>{
     let [result,setResult]=useState('');     //Once puzzle is solved, this will also disable hint and solve it for me buttons 
     let [answer,setAnswer]=useState();          //the answers will be stored here
     let [hints,setHints]=useState(0);          //the answers will be stored here
-    let original=JSON.parse(window.localStorage.getItem("original"));  //will hold the original sudoku board for reseting purposes
+    let original=JSON.parse(window.localStorage.getItem("original")) ||Array.from({length: 9},()=> Array.from({length: 9}, () => ''));  //will hold the original sudoku board for reseting purposes
 
     //A random puzzle is chosen from Puzzles.js
     function pickRandomPuzzle(puzzleChoice,resetting){
