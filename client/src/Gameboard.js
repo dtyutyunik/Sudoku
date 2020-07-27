@@ -17,33 +17,30 @@ const GameBoard=()=>{
     let [piece, setPiece]= useState(Array.from({length: 9},()=> Array.from({length: 9}, () => '')));
     let [result,setResult]=useState(false);     //Once puzzle is solved, this will also disable hint and solve it for me buttons 
     let [answer,setAnswer]=useState();          //the answers will be stored here
-    // let [original,setOriginal]=useState([]);       //will hold the original sudoku board for reseting purposes
-    // const [original]=useState(()=>{
-    //     let original=JSON.parse(window.localStorage.getItem("original"));
-    //     return original
-    // });       //will hold the original sudoku board for reseting purposes
-    let original=JSON.parse(window.localStorage.getItem("original"));
+    let original=JSON.parse(window.localStorage.getItem("original"));  //will hold the original sudoku board for reseting purposes
 
     //A random puzzle is chosen from Puzzles.js
     function pickRandomPuzzle(puzzleChoice,resetting){
-       let puzzle,answer; 
-        if(resetting){
+       let puzzle,ans; 
+
+        if(resetting===true){
             puzzle=puzzleChoice;
-            answer=answer;
+            setPiece(puzzle)  
+            setAnswer(answer)
+            return;
         }else{
             puzzle=puzzleChoice.quizzes;
-            answer=puzzleChoice.solutions;
+            ans=puzzleChoice.solutions;
         }
-        
-        
-        
+
         let puzzleArr=Array.from({length: 9},()=> Array.from({length: 9}, () => ''));
         let ansArr=Array.from({length: 9},()=> Array.from({length: 9}, () => ''));
         let col=0,row=0;
-        
+
+
         for(let i=0;i<puzzle.length;i++){
             let str=puzzle[i]
-            let strAns=answer[i]
+            let strAns=ans[i]
             
             if(str==='0'){
                 str=''
@@ -51,7 +48,7 @@ const GameBoard=()=>{
             }else{
                 puzzleArr[col][row]=Number(str);
             }
-    
+            
             ansArr[col][row]=Number(strAns);
             row++
             
@@ -62,15 +59,12 @@ const GameBoard=()=>{
             
         }
 
-        console.log('piece should be',puzzleArr)
-        setPiece(puzzleArr)     
+       
+        setPiece(puzzleArr)  
         setAnswer(ansArr)   
-        // console.log('current localstorage is',window.localStorage.getItem('original',JSON.stringify(puzzleArr)))
-        
+       
         //set the localstorage to original
         window.localStorage.setItem('original',JSON.stringify(puzzleArr));
-        // console.log('new localstorage is',window.localStorage.getItem('original',JSON.stringify(puzzleArr)))
-        // setOriginal([puzzleChoice.quizzes])
         
     }
     
@@ -78,6 +72,7 @@ const GameBoard=()=>{
     const newPuzzle=()=>{
         let puzzleChoice=Puzzles[Math.floor(Math.random()*(Puzzles.length-0)+0)];
         pickRandomPuzzle(puzzleChoice,false);
+        setResult(false)
         
     }
 
@@ -107,7 +102,6 @@ const GameBoard=()=>{
         for(let r=0;r<9;r++){
             for(let c=0;c<9;c++){
                     if(board[r][c]===''){
-        
                         return [r,c]
                     }
             }
@@ -116,48 +110,52 @@ const GameBoard=()=>{
         return null;    //if it returns null that means that puzzle is not empty
     }
 
-    function solve(board){
+    function solve(board,errors){
 
         let currentPosition=findEmpty(board);
                 //base case where the sudoku board has everything filled out correctly
                 if(currentPosition===null){
                     console.log('soduku finished succesfully')
-                    setResult(true)
-                    // setTimeout(()=>
-                    //     {setResult(true)}
-                    //     ,3000);
+                    // setResult(true)
+                    //created a timeout to provide the illusion of calculations
+                    setTimeout(()=>
+                        {setResult(true)}
+                        ,1200);
                     return true;
                 }
-                //  console.log(currentPosition)
+                
                 for(let val=1;val<=9;val++){
                         
                     if(validate(currentPosition[0],currentPosition[1],val)){
                         
                         let copy = [...board];   
                         copy[currentPosition[0]][currentPosition[1]]=val; 
-                        //delays it from updating by .1 sec 
-                        // setTimeout(()=>
-                        // {updateOneNumber(currentPosition[0],currentPosition[1],val)}
-                        // ,500); 
+                        //created a timeout to provide the illusion of calculations
+                        setTimeout(()=>
+                        {updateOneNumber(currentPosition[0],currentPosition[1],val)}
+                        ,1000); 
                         
-                        updateOneNumber(currentPosition[0],currentPosition[1],val)
-                        if(solve(copy)){
+                        // updateOneNumber(currentPosition[0],currentPosition[1],val)
+                        if(solve(copy,false)){
                         //now that we updated the value, we are rerunning solve , but now it is incremented till next '' cell   
                                 return true;
                         }
-
+                        console.log('inside loop board',currentPosition)
                         // board[currentPosition[0]][currentPosition[1]]='';   
                         // updateOneNumber(currentPosition[0],currentPosition[1],'')
                     }
                 }
+                
+                // // updateOneNumber(currentPosition[0],currentPosition[1],'')
+
                 board[currentPosition[0]][currentPosition[1]]='';   
-                updateOneNumber(currentPosition[0],currentPosition[1],'')
-                //delays it from updating by .1 sec 
-                // setTimeout(()=>
-                // {updateOneNumber(currentPosition[0],currentPosition[1],'')}
-                // ,500);
+                // //created a timeout to provide the illusion of calculations
+                setTimeout(()=>
+                {updateOneNumber(currentPosition[0],currentPosition[1],'')}
+                ,1000);
                 
-                
+                //if outsideloop first empty value is still empty then it means puzzle has a mistake.
+                console.log('outside loop board',currentPosition)
                 return false;
                 
 
@@ -293,24 +291,24 @@ const GameBoard=()=>{
 
     //need to add localstorage to hint to speed up hint randomization
     const hint=()=>{
-        
         let randomRow=Math.floor(Math.random()*(9-0)+0);
         
-        let choices= [];
+        
+        let columnPosition= [];
         for(let i=0;i<piece[randomRow].length;i++){
             
             if(piece[randomRow][i]===''){
-                choices.push(i)
+                columnPosition.push(i)
             }
         }
-        
-        if(choices.length>0){
-            let randomColumn=choices[Math.floor(Math.random()*(choices.length-0)+0)]
+       
+        if(columnPosition.length>0){
+            let randomColumn=columnPosition[Math.floor(Math.random()*(columnPosition.length-0)+0)]
             let updatedVal=answer[randomRow][randomColumn]; 
             updateOneNumber(randomRow,randomColumn,updatedVal)
             
         }else{
-            console.log('hint was rerun')
+            
             hint();
         }
 
@@ -355,7 +353,7 @@ const GameBoard=()=>{
 
     //resets puzzle back to original/current puzzle
     const reset=()=>{
-        console.log(original, original.length)
+        
         pickRandomPuzzle(original,true)
         setResult(false)
         
@@ -366,7 +364,10 @@ const GameBoard=()=>{
     return(
         
         <div>
-            {/* {console.log('originalarray is', original)} */}
+        <div className='title'>
+            <h1>Sudoku</h1>
+            <h3>Only allowed numbers per quadriant can be entered</h3>
+        </div>
         <div className="main">
                 {piece.map((index,columns)=>{
                     return(
@@ -395,32 +396,24 @@ const GameBoard=()=>{
                         </div>
                     )
                 })}
+
+                
+            </div>
+            <div className='buttonContainer'>
             
-                <div>
                      <button 
                      disabled={result?true:false}
                      onClick={hint}>Hint</button>
-                </div>
-
-                <div>
+            
                      <button 
                      disabled={result?true:false}
-                     onClick={()=>solve(piece)}>Solve it for me</button>
-                </div>
-                <div>
+                     onClick={()=>solve(piece,false)}>Solve it!</button>
+            
                      <button onClick={reset}>Reset</button>
-                </div>
-                <div>
-                     <button onClick={newPuzzle}>Generate new Sudoku</button>
-                </div>
-              
-               
-              
-                
+            
+                     <button onClick={newPuzzle}>New Sudoku</button>
             </div>
-             <div>
-                <h1>{result===true?'Solved':null}</h1>
-             </div>
+                <h2 className='solved'>{result===true?'Solved':null}</h2>
              </div>
 
       )
