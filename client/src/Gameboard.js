@@ -15,8 +15,9 @@ const GameBoard=()=>{
               ]
 
     let [piece, setPiece]= useState(Array.from({length: 9},()=> Array.from({length: 9}, () => '')));
-    let [result,setResult]=useState(false);     //Once puzzle is solved, this will also disable hint and solve it for me buttons 
+    let [result,setResult]=useState('');     //Once puzzle is solved, this will also disable hint and solve it for me buttons 
     let [answer,setAnswer]=useState();          //the answers will be stored here
+    let [hints,setHints]=useState(0);          //the answers will be stored here
     let original=JSON.parse(window.localStorage.getItem("original"));  //will hold the original sudoku board for reseting purposes
 
     //A random puzzle is chosen from Puzzles.js
@@ -72,7 +73,8 @@ const GameBoard=()=>{
     const newPuzzle=()=>{
         let puzzleChoice=Puzzles[Math.floor(Math.random()*(Puzzles.length-0)+0)];
         pickRandomPuzzle(puzzleChoice,false);
-        setResult(false)
+        setResult('')
+        setHints(0)
         
     }
 
@@ -115,12 +117,12 @@ const GameBoard=()=>{
         let currentPosition=findEmpty(board);
                 //base case where the sudoku board has everything filled out correctly
                 if(currentPosition===null){
-                    console.log('soduku finished succesfully')
-                    // setResult(true)
                     //created a timeout to provide the illusion of calculations
                     setTimeout(()=>
-                        {setResult(true)}
-                        ,1200);
+                        {setResult('found')
+                            setHints(0)}
+                        ,1400);
+                    
                     return true;
                 }
                 
@@ -140,7 +142,7 @@ const GameBoard=()=>{
                         //now that we updated the value, we are rerunning solve , but now it is incremented till next '' cell   
                                 return true;
                         }
-                        console.log('inside loop board',currentPosition)
+                        
                         // board[currentPosition[0]][currentPosition[1]]='';   
                         // updateOneNumber(currentPosition[0],currentPosition[1],'')
                     }
@@ -154,8 +156,11 @@ const GameBoard=()=>{
                 {updateOneNumber(currentPosition[0],currentPosition[1],'')}
                 ,1000);
                 
-                //if outsideloop first empty value is still empty then it means puzzle has a mistake.
-                console.log('outside loop board',currentPosition)
+                setTimeout(()=>
+                {setResult('error')}
+                ,1400);
+                
+                
                 return false;
                 
 
@@ -292,8 +297,6 @@ const GameBoard=()=>{
     //need to add localstorage to hint to speed up hint randomization
     const hint=()=>{
         let randomRow=Math.floor(Math.random()*(9-0)+0);
-        
-        
         let columnPosition= [];
         for(let i=0;i<piece[randomRow].length;i++){
             
@@ -306,7 +309,7 @@ const GameBoard=()=>{
             let randomColumn=columnPosition[Math.floor(Math.random()*(columnPosition.length-0)+0)]
             let updatedVal=answer[randomRow][randomColumn]; 
             updateOneNumber(randomRow,randomColumn,updatedVal)
-            
+            setHints(hints+1)
         }else{
             
             hint();
@@ -314,7 +317,7 @@ const GameBoard=()=>{
 
         //Exit 
         if(findEmpty(piece)===null){
-            return setResult(true);
+            return setResult('found');
 
         }
 
@@ -355,7 +358,8 @@ const GameBoard=()=>{
     const reset=()=>{
         
         pickRandomPuzzle(original,true)
-        setResult(false)
+        setResult('')
+        setHints(0);
         
     }
 
@@ -406,14 +410,15 @@ const GameBoard=()=>{
                      onClick={hint}>Hint</button>
             
                      <button 
-                     disabled={result?true:false}
-                     onClick={()=>solve(piece,false)}>Solve it!</button>
+                     disabled={result||hints<4?true:false}
+                     onClick={()=>solve(piece,false)}>Give Up!?</button>
             
                      <button onClick={reset}>Reset</button>
             
                      <button onClick={newPuzzle}>New Sudoku</button>
             </div>
-                <h2 className='solved'>{result===true?'Solved':null}</h2>
+                {/* <h2 className='solved'>{result==='found'?'Solved':null}</h2> */}
+                <h2 className='solved'>{result==='found'?'Solved':result==='error'?'One of Your Choices is Wrong':null}</h2>
              </div>
 
       )
