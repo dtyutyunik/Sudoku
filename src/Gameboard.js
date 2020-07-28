@@ -1,7 +1,6 @@
 import React, {useState,useEffect} from 'react';
 import './App.css';
 import Puzzles from './Puzzles.js';
-
 const GameBoard=()=>{
     const quads=[[[0,0],[2,2]],
                [[0,3],[2,5]],
@@ -14,12 +13,20 @@ const GameBoard=()=>{
                [[6,6],[8,8]]
               ]
 
-    let [piece, setPiece]= useState(Array.from({length: 9},()=> Array.from({length: 9}, () => '')));
+    let [piece, setPiece]= useState(Array.from({length: 9},()=> Array.from({length: 9}, () => '1')));
     let [result,setResult]=useState('');     //Once puzzle is solved, this will also disable hint and solve it for me buttons 
     let [answer,setAnswer]=useState();          //the answers will be stored here
     let [hints,setHints]=useState(0);          //the answers will be stored here
     let original=JSON.parse(window.localStorage.getItem("original"));  //will hold the original sudoku board for reseting purposes
 
+       //initalize first random choice of sudoku puzzle
+       useEffect(()=>{
+        // eslint-disable-next-line react-hooks/exhaustive-deps 
+        let puzzleChoice=Puzzles[Math.floor(Math.random()*(Puzzles.length-0)+0)];
+        pickRandomPuzzle(puzzleChoice,false);
+        
+    },[])
+    
     //A random puzzle is chosen from Puzzles.js
     function pickRandomPuzzle(puzzleChoice,resetting){
        let puzzle,ans; 
@@ -78,12 +85,7 @@ const GameBoard=()=>{
         
     }
 
-    //initalize first random choice of sudoku puzzle
-    useEffect(()=>{
-        let puzzleChoice=Puzzles[Math.floor(Math.random()*(Puzzles.length-0)+0)];
-        pickRandomPuzzle(puzzleChoice,false);
-        
-    },[])
+ 
 
     //check
     const validate=(row,column,val)=>{
@@ -364,10 +366,11 @@ const GameBoard=()=>{
     }
 
 
-
+    console.log('piece is', piece)
     return(
-        console.log('piece is', piece)
+        
         <div>
+            
         <div className='title'>
             <h1>Sudoku</h1>
             <h3>Only allowed numbers per quadriant can be entered</h3>
