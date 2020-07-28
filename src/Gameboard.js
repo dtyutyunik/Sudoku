@@ -410,11 +410,11 @@ const GameBoard=()=>{
             <div className='buttonContainer'>
             
                      <button 
-                     disabled={result?true:false}
+                     disabled={result==='found'?true:false}
                      onClick={hint}>Hint</button>
             
                      <button 
-                     disabled={result||hints<4?true:false}
+                     disabled={result==='found'||hints<4?true:false}
                      onClick={()=>solve(piece,false)}>Give Up!?</button>
             
                      <button onClick={reset}>Reset</button>
