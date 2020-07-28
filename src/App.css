@@ -81,7 +81,7 @@
     font-size: 1.3em;
     text-align: center;
     color:#E4334B;
-    background-color: #CFD5D5;
+    background: #CFD5D5;
     /* width:100%; */
     /* border: 1px solid yellow; */
     /* box-shadow: inset 2em 2em rgb(230, 230, 230, .8); */
@@ -128,7 +128,7 @@
     font-size: 1.5em;
     text-align: center;
     color:#E4334B;
-    background-color: #CFD5D5;
+    background: #CFD5D5;
   
     cursor: not-allowed;
    
