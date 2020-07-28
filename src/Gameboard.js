@@ -386,7 +386,7 @@ const GameBoard=()=>{
                                                 <input
                                                         id={[columns,rows]}
                                                         //disables the pieces so the original ones can not be changed
-                                                        disabled={original[rows][columns]!==''?true:false}
+                                                        // disabled={original[rows][columns]!==''?true:false}
                                                         value={piece[rows][columns]}    
                                                         
                                                         type='text'
