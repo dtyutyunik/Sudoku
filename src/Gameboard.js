@@ -366,7 +366,8 @@ const GameBoard=()=>{
     }
 
 
-    console.log('piece is', piece, original)
+    console.log('piece is', piece)
+    console.log( 'original is', original)
     return(
         
         <div>
