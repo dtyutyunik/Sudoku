@@ -366,7 +366,7 @@ const GameBoard=()=>{
 
 
     return(
-        
+        console.log('piece is', piece)
         <div>
         <div className='title'>
             <h1>Sudoku</h1>
