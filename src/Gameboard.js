@@ -17,6 +17,7 @@ const GameBoard=()=>{
     let [result,setResult]=useState('');     //Once puzzle is solved, this will also disable hint and solve it for me buttons 
     let [answer,setAnswer]=useState();          //the answers will be stored here
     let [hints,setHints]=useState(0);          //the answers will be stored here
+    let [start,setStart]=useState(0);
     let original=JSON.parse(window.localStorage.getItem("original")) || Array.from({length: 9},()=> Array.from({length: 9}, () => '1'));  //will hold the original sudoku board for reseting purposes
 
        //initalize first random choice of sudoku puzzle
@@ -26,6 +27,35 @@ const GameBoard=()=>{
         pickRandomPuzzle(puzzleChoice,false);
         
     },[])
+
+    //once board is fully filled out, it will check
+    useEffect(()=>{
+        
+        let emptyBoard=findEmpty(piece);
+
+        if(emptyBoard===null && start===1){
+            let solved=true;
+            for(let r=0;r<9;r++){
+                for(let c=0;c<9;c++){
+                        if(piece[r][c]!==answer[r][c]){
+                            solved=false;
+                            break;
+                        }
+                }
+            }
+
+                setTimeout(()=>
+                        {
+                        solved?setResult('found'):setResult('error')
+                        // console.log('check board should be empty', start)
+                    }
+                        ,1000);
+          
+        }
+
+        setStart(1);
+        
+    })
     
     //A random puzzle is chosen from Puzzles.js
     function pickRandomPuzzle(puzzleChoice,resetting){
